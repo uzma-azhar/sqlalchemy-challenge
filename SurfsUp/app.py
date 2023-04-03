@@ -124,7 +124,7 @@ def start_end(start,end):
     start_end_list=[]
     for date, min, max, avg in start_end_results:
         if date is None:
-            return jsonify({"error": f" {start} data not found"})
+            return jsonify({"error": f" {start} to {end} data not found"})
         start_end_dict={}
         start_end_dict["date"] = date
         start_end_dict["TMIN"] = min
@@ -135,4 +135,4 @@ def start_end(start,end):
     return jsonify(start_end_list)
     
 if __name__== "__main__":
-    app.run(port=8000,debug=True)
+    app.run(debug=True)
