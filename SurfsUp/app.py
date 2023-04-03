@@ -122,12 +122,14 @@ def start_end(start,end):
                                 .filter(Measurement.date>=start).filter(Measurement.date>=end).all()
     
     start_end_list=[]
-    for dates in start_end_results:
+    for date, min, max, avg in start_end_results:
+        if date is None:
+            return jsonify({"error": f" {start} data not found"})
         start_end_dict={}
-        start_end_dict["date"] = dates[0]
-        start_end_dict["TMIN"] = dates[1]
-        start_end_dict["TMAX"] = dates[2]
-        start_end_dict["TAVG"] = dates[3]
+        start_end_dict["date"] = date
+        start_end_dict["TMIN"] = min
+        start_end_dict["TMAX"] = max
+        start_end_dict["TAVG"] = avg
         start_end_list.append(start_end_dict)
 
     return jsonify(start_end_list)
