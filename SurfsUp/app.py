@@ -18,8 +18,8 @@ Base = automap_base()
 Base.prepare(autoload_with=engine)
 
 # Save references to each table
-Measurement = Base.classes.measurement
-Station = Base.classes.station
+measurement = Base.classes.measurement
+station = Base.classes.station
 
 # Create our session (link) from Python to the DB
 session = Session(bind=engine)
@@ -46,8 +46,8 @@ def home():
 #################################################
 @app.route("/api/v1.0/precipitation")
 def precipitation():
-    results=session.query(Measurement.date,
-                          Measurement.prcp).filter(Measurement.date>="2016-08-23").all()
+    results=session.query(measurement.date,
+                          measurement.prcp).filter(measurement.date>="2016-08-23").all()
     
     result_list=[]
     for date, prcp in results: 
@@ -59,20 +59,20 @@ def precipitation():
 
 @app.route("/api/v1.0/stations")
 def stations():
-    station_results=session.query(Station.station).all()
+    station_results=session.query(station.station).all()
 
 # using all data from the station table as question does not clarify if only some data is needed
     station_list = []
-    for station in station_results:
+    for s in station_results:
         station_dict = {}
-        station_dict["station"] = station["station"]
+        station_dict["station"] = s["station"]
         station_list.append(station_dict)
     return jsonify(station_list)
 
 @app.route("/api/v1.0/tobs")
 def tobs():
-    tobs_results=session.query(Measurement.date, 
-                              Measurement.tobs).filter(Measurement.station=="USC00519281").all()
+    tobs_results=session.query(measurement.date, 
+                              measurement.tobs).filter(measurement.station=="USC00519281").all()
     
     tobs_list= []
     for tobs in tobs_results:
@@ -85,14 +85,14 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def start(start):
-    start_results=session.query(func.min(Measurement.tobs),
-                               func.avg(Measurement.tobs),
-                               func.max(Measurement.tobs)).filter(Measurement.date>=start).all()
+    start_results=session.query(func.min(measurement.tobs),
+                               func.avg(measurement.tobs),
+                               func.max(measurement.tobs)).filter(measurement.date>=start).all()
     
     start_list=[]
     for min, avg, max in start_results:
         if min is None: # min will be null in the case of a date not included
-            return jsonify({"error": f" {start} data not found"})
+            return jsonify({"error": f"{start} data not found"})
         start_dict={}
         start_dict["TMIN"] = min
         start_dict["TAVG"] = avg
@@ -103,9 +103,9 @@ def start(start):
 
 @app.route("/api/v1.0/<start>/<end>")
 def start_end(start,end):
-    start_end_results=session.query(func.min(Measurement.tobs),
-                                    func.avg(Measurement.tobs),
-                                    func.max(Measurement.tobs)).filter(Measurement.date>=start).filter(Measurement.date<=end).all()
+    start_end_results=session.query(func.min(measurement.tobs),
+                                    func.avg(measurement.tobs),
+                                    func.max(measurement.tobs)).filter(measurement.date>=start).filter(measurement.date<=end).all()
     
     start_end_list=[]
     for min, avg, max in start_end_results:
