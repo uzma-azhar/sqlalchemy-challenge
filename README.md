@@ -1,7 +1,7 @@
 # sqlalchemy-challenge
 This is my submission for the module 10 challenge. My submission includes 2 files:
 - climate_starter.ipynb - my jupyter notebook with analysis
-- app.py - my api server code
+- app.py - my climate app code
 
 In climate_starter.ipynb, you can find:
 - Precipitation Analysis - analyzing precipitation data from the last 12 months included in the database using a graph and summary statistics
