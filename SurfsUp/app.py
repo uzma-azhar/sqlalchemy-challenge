@@ -91,7 +91,7 @@ def start(start):
     
     start_list=[]
     for min, avg, max in start_results:
-        if min is None:
+        if min is None: # min will be null in the case of a date not included
             return jsonify({"error": f" {start} data not found"})
         start_dict={}
         start_dict["TMIN"] = min
@@ -109,8 +109,10 @@ def start_end(start,end):
     
     start_end_list=[]
     for min, avg, max in start_end_results:
-        if min is None:
-            return jsonify({"error": f" {start} to {end} data not found"})
+        if min is None: # min will be null in the case of a date not included
+            return jsonify({"error": f"{start} data not found"})
+        if end > "2017-08-23": # to ensure that an end date not included can be caught and does not just return all data since start date 
+            return jsonify({"error": f"{end} data not found"})
         start_end_dict={}
         start_end_dict["TMIN"] = min
         start_end_dict["TAVG"] = avg
