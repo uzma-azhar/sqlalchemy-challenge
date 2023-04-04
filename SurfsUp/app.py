@@ -59,23 +59,13 @@ def precipitation():
 
 @app.route("/api/v1.0/stations")
 def stations():
-    station_results=session.query(Station.id,
-                                 Station.station,
-                                 Station.name,
-                                 Station.latitude,
-                                 Station.longitude,
-                                 Station.elevation).all()
+    station_results=session.query(Station.station).all()
 
 # using all data from the station table as question does not clarify if only some data is needed
     station_list = []
     for station in station_results:
         station_dict = {}
-        station_dict["id"] = station["id"]
         station_dict["station"] = station["station"]
-        station_dict["name"] = station["name"]
-        station_dict["latitude"] = station["latitude"]
-        station_dict["longitude"] = station["longitude"]
-        station_dict["elevation"] = station["elevation"]
         station_list.append(station_dict)
     return jsonify(station_list)
 
@@ -95,41 +85,36 @@ def tobs():
 
 @app.route("/api/v1.0/<start>")
 def start(start):
-    start_results=session.query(Measurement.date,
-                               func.min(Measurement.tobs),
-                               func.max(Measurement.tobs),
-                               func.avg(Measurement.tobs)).filter(Measurement.date>=start).all()
+    start_results=session.query(func.min(Measurement.tobs),
+                               func.avg(Measurement.tobs),
+                               func.max(Measurement.tobs)).filter(Measurement.date>=start).all()
     
     start_list=[]
-    for date, min, max, avg in start_results:
-        if date is None:
+    for min, avg, max in start_results:
+        if min is None:
             return jsonify({"error": f" {start} data not found"})
         start_dict={}
-        start_dict["date"] = date
         start_dict["TMIN"] = min
-        start_dict["TMAX"] = max
         start_dict["TAVG"] = avg
+        start_dict["TMAX"] = max
         start_list.append(start_dict)
 
     return jsonify(start_list)
 
 @app.route("/api/v1.0/<start>/<end>")
 def start_end(start,end):
-    start_end_results=session.query(Measurement.date,
-                               func.min(Measurement.tobs),
-                               func.max(Measurement.tobs),
-                               func.avg(Measurement.tobs))\
-                                .filter(Measurement.date>=start).filter(Measurement.date>=end).all()
+    start_end_results=session.query(func.min(Measurement.tobs),
+                                    func.avg(Measurement.tobs),
+                                    func.max(Measurement.tobs)).filter(Measurement.date>=start).filter(Measurement.date<=end).all()
     
     start_end_list=[]
-    for date, min, max, avg in start_end_results:
-        if date is None:
+    for min, avg, max in start_end_results:
+        if min is None:
             return jsonify({"error": f" {start} to {end} data not found"})
         start_end_dict={}
-        start_end_dict["date"] = date
         start_end_dict["TMIN"] = min
-        start_end_dict["TMAX"] = max
         start_end_dict["TAVG"] = avg
+        start_end_dict["TMAX"] = max
         start_end_list.append(start_end_dict)
 
     return jsonify(start_end_list)
